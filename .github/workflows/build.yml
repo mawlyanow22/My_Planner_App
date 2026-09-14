@@ -60,9 +60,9 @@ jobs:
 
       - name: Clean previous Buildozer files
         run: |
-          rm -rf .buildozer
-          rm -rf bin
-
+                   rm -rf .buildozer
+                   rm -rf bin
+                   mkdir -p bin
       - name: Build APK
         run: |
           yes | buildozer -v android debug

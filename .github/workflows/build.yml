@@ -39,6 +39,11 @@ jobs:
             libssl-dev \
             lbzip2
 
+      - name: Set Java 17
+        run: |
+          echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
+          echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> $GITHUB_PATH
+
       - name: Check environment
         run: |
           python3 --version
@@ -50,7 +55,13 @@ jobs:
       - name: Install Buildozer
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade buildozer cython==0.29.37
+          python3 -m pip install --upgrade buildozer
+          python3 -m pip install "cython==0.29.37"
+
+      - name: Clean previous Buildozer files
+        run: |
+          rm -rf .buildozer
+          rm -rf bin
 
       - name: Build APK
         run: |

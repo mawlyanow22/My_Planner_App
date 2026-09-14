@@ -11,8 +11,24 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android packages
+        run: |
+          sdkmanager "platform-tools"
+          sdkmanager "platforms;android-35"
+          sdkmanager "build-tools;35.0.0"
+          sdkmanager "ndk;27.3.13750724"
 
       - name: Install system dependencies
         run: |
@@ -23,7 +39,6 @@ jobs:
             git \
             zip \
             unzip \
-            openjdk-17-jdk \
             python3-pip \
             python3-dev \
             autoconf \
@@ -39,31 +54,30 @@ jobs:
             libssl-dev \
             lbzip2
 
-      - name: Set Java 17
-        run: |
-          echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
-          echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> $GITHUB_PATH
-
-      - name: Check environment
-        run: |
-          python3 --version
-          pip3 --version
-          gcc --version
-          g++ --version
-          java -version
-
-      - name: Install Buildozer
+      - name: Install Python dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade buildozer
           python3 -m pip install "cython==0.29.37"
 
-      - name: Clean previous Buildozer files
+      - name: Show Android environment
         run: |
-                   rm -rf .buildozer
-                   rm -rf bin
-                   mkdir -p bin
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          java -version
+          python3 --version
+          buildozer --version
+
+      - name: Clean Buildozer
+        run: |
+          rm -rf .buildozer
+          rm -rf bin
+          mkdir -p bin
+
       - name: Build APK
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
         run: |
           yes | buildozer -v android debug
 

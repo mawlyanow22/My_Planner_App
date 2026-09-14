@@ -21,8 +21,6 @@ android.minapi = 23
 
 android.accept_sdk_license = True
 
-android.ndk = 27.3.13750724
-
 android.permissions = INTERNET
 
 [buildozer]
